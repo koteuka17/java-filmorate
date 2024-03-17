@@ -19,7 +19,7 @@ public class FilmController {
     //добавление фильма;
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        log.info(film.toString());
+        log.info("Создание фильма {}", film);
         if (films.containsValue(film)) {
             log.warn("Такой фильм уже существует");
             throw new ValidationException("Такой фильм уже существует");
@@ -32,7 +32,7 @@ public class FilmController {
     //обновление фильма;
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        log.info(film.toString());
+        log.info("Обновление фильма {}", film);
         if (!films.containsKey(film.getId())) {
             log.warn("Такого фильма не существует");
             throw new ValidationException("Такого фильма не существует");

@@ -19,7 +19,7 @@ public class UserController {
     //создание пользователя;
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        log.info(user.toString());
+        log.info("Создание пользователя {}", user);
         if (users.containsValue(user)) {
             log.warn("Такой пользователь уже существует");
             throw new ValidationException("Такой пользователь уже существует");
@@ -35,7 +35,7 @@ public class UserController {
     //обновление пользователя;
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        log.info(user.toString());
+        log.info("Обновление пользователя {}", user);
         if (!users.containsKey(user.getId())) {
             log.warn("Такого пользователя не существует");
             throw new ValidationException("Такого пользователя не существует");

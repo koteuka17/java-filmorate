@@ -13,7 +13,6 @@ public class User {
     @Email(message = "Некорректная электронная почта")
     private String email;
 
-    @NotNull(message = "Не указан логин")
     @NotBlank(message = "Логин не может быть пустым")
     @Pattern(regexp = "\\S+", message = "В логине не могут находиться пробелы")
     private String login;
