@@ -32,7 +32,7 @@ class ValidationTest {
     @Test
     public void testUser() {
         User user = new User();
-        user.setId(1);
+        user.setId(1L);
         user.setBirthday(LocalDate.of(2001, 12, 12));
         user.setLogin("luke");
         user.setEmail("luke@ya.ru");
@@ -64,7 +64,7 @@ class ValidationTest {
     @Test
     public void testFilm() {
         Film film = new Film();
-        film.setId(1);
+        film.setId(1L);
         film.setName("Cars");
         film.setDescription("Мультфильм о живых машинках");
         film.setReleaseDate(LocalDate.of(2006, 06, 15));
