@@ -6,10 +6,12 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    private static final HashMap<Long, User> users = new HashMap<>();
+    private final HashMap<Long, User> users = new HashMap<>();
     private long idCounter = 1;
 
     @Override
@@ -54,22 +56,19 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> getFriends(long id) {
-        List<User> friendsList = new ArrayList<>();
-        for (Long friendId : users.get(id).getFriendsId()) {
-            friendsList.add(users.get(friendId));
-        }
-        return friendsList;
+        return users.get(id).getFriendsId().stream()
+                .map(users::get)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<User> getCommonFriends(long id, long friendId) {
-        List<User> commonFriendsList = new ArrayList<>();
-        for (Long userId : users.get(id).getFriendsId()) {
-            if (users.get(friendId).getFriendsId().contains(userId)) {
-                commonFriendsList.add(users.get(userId));
-            }
-        }
-        return commonFriendsList;
+        final Set<Long> friends = users.get(id).getFriendsId();
+        final Set<Long> otherFriends = users.get(friendId).getFriendsId();
+        return friends.stream()
+                .filter(otherFriends::contains)
+                .map(users::get)
+                .collect(Collectors.toList());
     }
 
     @Override

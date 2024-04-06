@@ -33,9 +33,8 @@ public class Film {
     @Positive(message = "Продолжительность фильма не может быть отрицательной")
     private Integer duration;
 
-    public Long addLike(Long userId) {
+    public void addLike(Long userId) {
         likes.add(userId);
-        return userId;
     }
 
     public void delLike(Long userId) {
@@ -43,7 +42,6 @@ public class Film {
     }
 
     public int getNumOfLikes() {
-        if (!likes.isEmpty()) return likes.size();
-        else return 0;
+        return likes.size();
     }
 }

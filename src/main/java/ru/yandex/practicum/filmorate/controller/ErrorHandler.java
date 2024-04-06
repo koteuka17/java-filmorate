@@ -19,6 +19,13 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse illegalArgumentHandle(final IllegalArgumentException e) {
+        log.error("error 400: {}: {}.", e.getClass().getSimpleName(), e.getMessage());
+        return new ExceptionResponse("Неверный запрос", e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ExceptionResponse notFoundHandle(final NotFoundException e) {
         log.error("error 404: {}: {}.", e.getClass().getSimpleName(), e.getMessage());

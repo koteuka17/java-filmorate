@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InMemoryFilmService implements FilmService {
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final UserService userService;
 
     @Override
     public Film addFilm(Film film) {
@@ -57,8 +57,9 @@ public class InMemoryFilmService implements FilmService {
 
     @Override
     public List<Film> getFilms() {
-        log.info("Текущее количествоо фильмов: {}", filmStorage.getFilms().size());
-        return filmStorage.getFilms();
+        List<Film> films = filmStorage.getFilms();
+        log.info("Текущее количествоо фильмов: {}", films.size());
+        return films;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class InMemoryFilmService implements FilmService {
             log.warn("Такого фильма не существует");
             throw new NotFoundException("Такого фильма не существует");
         }
-        if (userStorage.findUser(userId) == null) {
+        if (userService.getUser(userId) == null) {
             log.warn("Пользователь не найден");
             throw new NotFoundException("Пользователь не найден");
         }
@@ -81,7 +82,7 @@ public class InMemoryFilmService implements FilmService {
             log.warn("Такого фильма не существует");
             throw new NotFoundException("Такого фильма не существует");
         }
-        if (userStorage.findUser(userId) == null) {
+        if (userService.getUser(userId) == null) {
             log.warn("Пользователь не найден");
             throw new NotFoundException("Пользователь не найден");
         }
@@ -91,8 +92,8 @@ public class InMemoryFilmService implements FilmService {
 
     @Override
     public List<Film> getPopularFilms(long count) {
-        if (count <= 0 || count > 10) {
-            count = 10;
+        if (count <= 0) {
+            throw new IllegalArgumentException("Запрошено отрицательное число");
         }
         log.info("Список {} популярных фильма(ов)", count);
         return filmStorage.getPopularFilms(count);

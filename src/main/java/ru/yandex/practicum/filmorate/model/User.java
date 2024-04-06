@@ -25,9 +25,8 @@ public class User {
     @Past(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
 
-    public Long addFriend(Long friendId) {
+    public void addFriend(Long friendId) {
         friendsId.add(friendId);
-        return friendId;
     }
 
     public void delFriend(Long friendId) {
