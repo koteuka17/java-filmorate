@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.Objects;
 @AllArgsConstructor
 public class UserDbStorage implements UserStorage {
     private JdbcTemplate jdbcTemplate;
-    private FriendshipStorage friendship;
 
     @Override
     public User addUser(User user) {
@@ -67,7 +65,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void addFriend(long id, long friendId) {
-        friendship.add(id, friendId);
+        final String sql = "insert into friends (user_id_1, user_id_2) values (?, ?)";
+        jdbcTemplate.update(sql, id, friendId);
     }
 
     @Override
@@ -78,16 +77,15 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getFriends(long id) {
-        final String sql = "select * from users where id in (select f.user_id_2 from users u " +
-                "join friends f on u.id = f.user_id_1 where u.id = ?)";
+        final String sql = "select * from users u, friends f " +
+                "where u.id = f.user_id_2 and f.user_id_1 = ?";
         return jdbcTemplate.query(sql, userRowMapper(), id);
     }
 
     @Override
     public List<User> getCommonFriends(long id, long friendId) {
-        final String sql = "select * from users where id in (select user_id_2 from users u join friends f " +
-                "on u.id = f.user_id_1 where u.id = ?) and id in (select user_id_2 from users u " +
-                "join friends f on u.id = f.user_id_1 where u.id = ?)";
+        final String sql = "select * from users u, friends f, friends o " +
+                "where u.id = f.user_id_2 and u.id = o.user_id_2 and f.user_id_1 = ? and o.user_id_1 = ?";
         return jdbcTemplate.query(sql, userRowMapper(), id, friendId);
     }
 

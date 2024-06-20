@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,9 +13,8 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.PreparedStatement;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.sql.SQLException;
+import java.util.*;
 
 @Component
 @AllArgsConstructor
@@ -41,9 +41,20 @@ public class FilmDbStorage implements FilmStorage {
         film.setId(Objects.requireNonNull(gkh.getKey()).longValue());
 
         final String sql1 = "insert into film_genres (film_id, genre_id) values (?, ?)";
-        for (Genre genre : new HashSet<>(film.getGenres())) {
-            jdbcTemplate.update(sql1, film.getId(), genre.getId());
-        }
+        final List<Genre> genreList = new ArrayList<>(new HashSet<>(film.getGenres()));
+        jdbcTemplate.batchUpdate(
+                sql1,
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setLong(1, film.getId());
+                        ps.setLong(2, genreList.get(i).getId());
+                    }
+
+                    public int getBatchSize() {
+                        return genreList.size();
+                    }
+                });
+
         return film;
     }
 
@@ -66,6 +77,21 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sql, film.getName(), film.getReleaseDate(), film.getDescription(),
                 film.getDuration(), film.getId());
 
+        jdbcTemplate.update("delete from FILM_GENRES where FILM_ID = ?", film.getId());
+
+        final List<Genre> genreList = new ArrayList<>(new HashSet<>(film.getGenres()));
+        jdbcTemplate.batchUpdate(
+                "insert into film_genres (film_id, genre_id) values (?, ?)",
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setLong(1, film.getId());
+                        ps.setLong(2, genreList.get(i).getId());
+                    }
+
+                    public int getBatchSize() {
+                        return genreList.size();
+                    }
+                });
         return film;
     }
 
@@ -130,13 +156,6 @@ public class FilmDbStorage implements FilmStorage {
         final String sql = "delete from film_genres where film_id = ?";
 
         jdbcTemplate.update(sql, filmId);
-    }
-
-    @Override
-    public void addFilmMpa(Long filmId, Integer mpaId) {
-        final String sql = "update films set rating_mpa_id = ? where id = ?";
-
-        jdbcTemplate.update(sql, mpaId, filmId);
     }
 
     @Override

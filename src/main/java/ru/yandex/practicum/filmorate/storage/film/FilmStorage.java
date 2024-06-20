@@ -31,8 +31,6 @@ public interface FilmStorage {
 
     void delFilmGenres(Long filmId);
 
-    void addFilmMpa(Long filmId, Integer mpaId);
-
     Mpa getFilmMpa(Long filmId);
 
     void delFilmMpa(Long filmId);

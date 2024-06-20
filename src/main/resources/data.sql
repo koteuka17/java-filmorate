@@ -1,23 +1,14 @@
 insert into mpa_ratings (id, name)
-values (1, 'G');
-insert into mpa_ratings (id, name)
-values (2, 'PG');
-insert into mpa_ratings (id, name)
-values (3, 'PG-13');
-insert into mpa_ratings (id, name)
-values (4, 'R');
-insert into mpa_ratings (id, name)
-values (5, 'NC-17');
+values (1, 'G'),
+       (2, 'PG'),
+       (3, 'PG-13'),
+       (4, 'R'),
+       (5, 'NC-17');
 
 insert into genres (id, name)
-values (1, 'Комедия');
-insert into genres (id, name)
-values (2, 'Драма');
-insert into genres (id, name)
-values (3, 'Мультфильм');
-insert into genres (id, name)
-values (4, 'Триллер');
-insert into genres (id, name)
-values (5, 'Документальный');
-insert into genres (id, name)
-values (6, 'Боевик');
+values (1, 'Комедия'),
+       (2, 'Драма'),
+       (3, 'Мультфильм'),
+       (4, 'Триллер'),
+       (5, 'Документальный'),
+       (6, 'Боевик');
